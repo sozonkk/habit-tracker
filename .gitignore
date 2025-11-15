@@ -25,6 +25,7 @@ out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # IDE
 .vscode/
@@ -35,3 +36,10 @@ yarn-error.log*
 # Temporary files
 *.tmp
 .cache/
+
+# Google Service Account (DO NOT COMMIT!)
+service-account-key.json
+*-key.json
+
+# Vercel
+.vercel
