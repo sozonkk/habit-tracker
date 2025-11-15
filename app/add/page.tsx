@@ -3,12 +3,22 @@
 import Link from "next/link";
 import { useState } from "react";
 
+type SetData = {
+  reps: string;
+  weight: string;
+};
+
+type ExerciseData = {
+  name: string;
+  sets: SetData[];
+  notes: string;
+};
+
 export default function AddWorkout() {
-  const [exercise, setExercise] = useState("Wyciskanie Sztangi");
-  const [sets, setSets] = useState("3");
-  const [reps, setReps] = useState("10");
-  const [weight, setWeight] = useState("60");
+  const [selectedExercise, setSelectedExercise] = useState("Wyciskanie Sztangi");
+  const [currentSets, setCurrentSets] = useState<SetData[]>([{ reps: "10", weight: "60" }]);
   const [notes, setNotes] = useState("");
+  const [workout, setWorkout] = useState<ExerciseData[]>([]);
 
   // Mock exercises list
   const exercises = [
@@ -24,9 +34,44 @@ export default function AddWorkout() {
     "Leg Press",
   ];
 
-  const handleSave = () => {
-    // Mock save - w przyszłości zapisze do bazy
-    alert(`Zapisano: ${exercise}\n${sets} serie × ${reps} powtórzeń @ ${weight}kg`);
+  const addSet = () => {
+    setCurrentSets([...currentSets, { reps: "10", weight: "60" }]);
+  };
+
+  const removeSet = (index: number) => {
+    if (currentSets.length > 1) {
+      setCurrentSets(currentSets.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateSet = (index: number, field: 'reps' | 'weight', value: string) => {
+    const newSets = [...currentSets];
+    newSets[index][field] = value;
+    setCurrentSets(newSets);
+  };
+
+  const addExerciseToWorkout = () => {
+    const newExercise: ExerciseData = {
+      name: selectedExercise,
+      sets: [...currentSets],
+      notes: notes,
+    };
+    setWorkout([...workout, newExercise]);
+
+    // Reset form
+    setCurrentSets([{ reps: "10", weight: "60" }]);
+    setNotes("");
+  };
+
+  const removeExercise = (index: number) => {
+    setWorkout(workout.filter((_, i) => i !== index));
+  };
+
+  const saveWorkout = () => {
+    const summary = workout.map(ex =>
+      `${ex.name}: ${ex.sets.length} serie`
+    ).join('\n');
+    alert(`Zapisano trening!\n\n${summary}`);
   };
 
   return (
@@ -43,13 +88,13 @@ export default function AddWorkout() {
         </header>
 
         {/* Form */}
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+        <div className="space-y-4">
           {/* Exercise Select */}
           <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
             <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wide">Ćwiczenie</label>
             <select
-              value={exercise}
-              onChange={(e) => setExercise(e.target.value)}
+              value={selectedExercise}
+              onChange={(e) => setSelectedExercise(e.target.value)}
               className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
             >
               {exercises.map((ex) => (
@@ -58,48 +103,56 @@ export default function AddWorkout() {
             </select>
           </div>
 
-          {/* Sets, Reps, Weight Grid */}
+          {/* Sets */}
           <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
-            <label className="block text-sm font-medium text-gray-400 mb-3 uppercase tracking-wide">Parametry</label>
-            <div className="grid grid-cols-3 gap-3">
-              {/* Sets */}
-              <div>
-                <label className="block text-xs text-gray-500 mb-2">Serie</label>
-                <input
-                  type="number"
-                  value={sets}
-                  onChange={(e) => setSets(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-3 text-white text-center font-mono focus:outline-none focus:border-primary transition-colors"
-                  min="1"
-                  max="10"
-                />
-              </div>
+            <div className="flex justify-between items-center mb-3">
+              <label className="text-sm font-medium text-gray-400 uppercase tracking-wide">Serie</label>
+              <button
+                onClick={addSet}
+                className="text-primary text-sm font-medium flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                </svg>
+                Dodaj serię
+              </button>
+            </div>
 
-              {/* Reps */}
-              <div>
-                <label className="block text-xs text-gray-500 mb-2">Powt.</label>
-                <input
-                  type="number"
-                  value={reps}
-                  onChange={(e) => setReps(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-3 text-white text-center font-mono focus:outline-none focus:border-primary transition-colors"
-                  min="1"
-                  max="50"
-                />
-              </div>
-
-              {/* Weight */}
-              <div>
-                <label className="block text-xs text-gray-500 mb-2">Ciężar (kg)</label>
-                <input
-                  type="number"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-3 text-white text-center font-mono focus:outline-none focus:border-primary transition-colors"
-                  min="0"
-                  step="2.5"
-                />
-              </div>
+            <div className="space-y-2">
+              {currentSets.map((set, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500 w-16">Seria {index + 1}</span>
+                  <input
+                    type="number"
+                    value={set.reps}
+                    onChange={(e) => updateSet(index, 'reps', e.target.value)}
+                    placeholder="Powt."
+                    className="flex-1 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-center font-mono focus:outline-none focus:border-primary transition-colors"
+                    min="1"
+                  />
+                  <span className="text-gray-500">×</span>
+                  <input
+                    type="number"
+                    value={set.weight}
+                    onChange={(e) => updateSet(index, 'weight', e.target.value)}
+                    placeholder="kg"
+                    className="flex-1 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-center font-mono focus:outline-none focus:border-primary transition-colors"
+                    min="0"
+                    step="2.5"
+                  />
+                  <span className="text-gray-500 text-sm">kg</span>
+                  {currentSets.length > 1 && (
+                    <button
+                      onClick={() => removeSet(index)}
+                      className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -110,26 +163,56 @@ export default function AddWorkout() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary resize-none transition-colors"
-              rows={3}
+              rows={2}
               placeholder="Jak się czułeś?"
             />
           </div>
 
-          {/* Preview */}
-          <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
-            <p className="text-sm text-gray-400 mb-2">Podgląd:</p>
-            <p className="font-medium">{exercise}</p>
-            <p className="text-sm text-gray-400 font-mono">{sets}×{reps} · {weight}kg</p>
-          </div>
-
-          {/* Save Button */}
+          {/* Add Exercise Button */}
           <button
-            type="submit"
-            className="w-full bg-primary hover:bg-[#4F90FF] text-white font-medium py-4 rounded-lg transition-colors"
+            onClick={addExerciseToWorkout}
+            className="w-full bg-[#1A1A1A] hover:bg-[#252525] border border-[#2A2A2A] text-white font-medium py-3 rounded-lg transition-colors"
           >
-            Zapisz Trening
+            + Dodaj ćwiczenie do treningu
           </button>
-        </form>
+        </div>
+
+        {/* Workout Preview */}
+        {workout.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold mb-3">Podgląd treningu ({workout.length} {workout.length === 1 ? 'ćwiczenie' : 'ćwiczenia'})</h2>
+            <div className="space-y-2">
+              {workout.map((ex, idx) => (
+                <div key={idx} className="bg-[#151515] border border-[#2A2A2A] rounded-lg p-3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-medium">{ex.name}</h3>
+                      <p className="text-sm text-gray-400 font-mono">
+                        {ex.sets.map((s, i) => `${s.reps}×${s.weight}kg`).join(', ')}
+                      </p>
+                      {ex.notes && <p className="text-xs text-gray-500 mt-1">{ex.notes}</p>}
+                    </div>
+                    <button
+                      onClick={() => removeExercise(idx)}
+                      className="text-gray-500 hover:text-red-400 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={saveWorkout}
+              className="w-full bg-primary hover:bg-[#4F90FF] text-white font-medium py-4 rounded-lg transition-colors mt-4"
+            >
+              Zapisz trening ({workout.length} {workout.length === 1 ? 'ćwiczenie' : 'ćwiczenia'})
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Bottom Navigation */}

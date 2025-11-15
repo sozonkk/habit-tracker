@@ -84,46 +84,28 @@ export default function History() {
                   .map((workout) => (
                     <div
                       key={workout.id}
-                      className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4 hover:border-[#3A3A3A] transition-colors"
+                      className="bg-[#151515] border border-[#2A2A2A] rounded-lg p-3 hover:border-[#3A3A3A] transition-colors"
                     >
                       {/* Exercise Header */}
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="font-semibold text-lg tracking-tight">
-                            {workout.exercise}
-                          </h3>
-                          <p className="text-xs text-gray-500 mt-1">{workout.dateShort}</p>
-                        </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-medium tracking-tight">{workout.exercise}</h3>
                         <button className="text-gray-500 hover:text-red-400 transition-colors p-1">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                           </svg>
                         </button>
                       </div>
 
-                      {/* Sets */}
-                      <div className="space-y-2 mb-3">
-                        {workout.sets.map((set) => (
-                          <div
-                            key={set.set}
-                            className="flex items-center justify-between text-sm bg-[#1A1A1A] rounded-lg px-3 py-2"
-                          >
-                            <span className="text-gray-500 font-medium w-16">Seria {set.set}</span>
-                            <span className="text-gray-300 font-mono flex-1 text-center">
-                              {set.reps} × {set.weight}kg
-                            </span>
-                            <span className="text-gray-500 text-xs w-16 text-right">
-                              {set.reps * set.weight}kg
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                      {/* Sets in one line */}
+                      <p className="text-sm text-gray-400 font-mono mb-2">
+                        {workout.sets.map((s) => `${s.reps}×${s.weight}kg`).join(' · ')}
+                      </p>
 
                       {/* Summary */}
-                      <div className="pt-3 border-t border-[#2A2A2A] flex justify-between text-xs text-gray-400">
-                        <span>{workout.sets.length} serie</span>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>{workout.sets.length} {workout.sets.length === 1 ? 'seria' : 'serie'}</span>
                         <span className="font-mono">
-                          Łącznie: {workout.sets.reduce((sum, s) => sum + s.reps * s.weight, 0)}kg
+                          Volume: {workout.sets.reduce((sum, s) => sum + s.reps * s.weight, 0)}kg
                         </span>
                       </div>
                     </div>

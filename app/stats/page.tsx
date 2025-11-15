@@ -12,9 +12,9 @@ const stats = {
     { name: "Martwy Ciąg", count: 6, totalWeight: 7200 },
   ],
   personalRecords: [
-    { exercise: "Przysiady", weight: 100, reps: 8, date: "15 lis" },
-    { exercise: "Martwy Ciąg", weight: 120, reps: 6, date: "13 lis" },
-    { exercise: "Wyciskanie Sztangi", weight: 60, reps: 10, date: "15 lis" },
+    { exercise: "Przysiady", weight: 100, reps: 8, oneRM: 125, date: "15 lis" },
+    { exercise: "Martwy Ciąg", weight: 120, reps: 6, oneRM: 140, date: "13 lis" },
+    { exercise: "Wyciskanie Sztangi", weight: 60, reps: 10, oneRM: 80, date: "15 lis" },
   ],
   weeklyProgress: [
     { day: "Pn", workouts: 1 },
@@ -116,15 +116,20 @@ export default function Stats() {
             {stats.personalRecords.map((record) => (
               <div
                 key={record.exercise}
-                className="flex justify-between items-center p-3 bg-[#1A1A1A] rounded-lg"
+                className="p-3 bg-[#1A1A1A] rounded-lg"
               >
-                <div>
-                  <p className="font-medium">{record.exercise}</p>
-                  <p className="text-xs text-gray-500">{record.date}</p>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <p className="font-medium">{record.exercise}</p>
+                    <p className="text-xs text-gray-500">{record.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono font-semibold text-primary">{record.weight}kg × {record.reps}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-mono font-semibold text-primary">{record.weight}kg</p>
-                  <p className="text-xs text-gray-500">{record.reps} powtórzeń</p>
+                <div className="flex items-center gap-2 pt-2 border-t border-[#252525]">
+                  <span className="text-xs text-gray-500">1RM (szacowane):</span>
+                  <span className="text-sm font-mono font-semibold text-emerald-400">{record.oneRM}kg</span>
                 </div>
               </div>
             ))}
