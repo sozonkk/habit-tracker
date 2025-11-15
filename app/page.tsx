@@ -13,10 +13,7 @@ export default function Home() {
 
           {/* Streak Badge */}
           <div className="flex items-center gap-2 bg-[#151515] px-3 py-2 rounded-xl border border-[#252525]">
-            <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C12 2 7 6 7 11C7 14.3137 9.68629 17 13 17C16.3137 17 19 14.3137 19 11C19 6 14 2 14 2C14 2 13 3 12 2Z"/>
-              <path d="M12 22C9.23858 22 7 19.7614 7 17V15C7 15 8.5 16 10 16C11.5 16 12 15 12 15C12 15 12.5 16 14 16C15.5 16 17 15 17 15V17C17 19.7614 14.7614 22 12 22Z" opacity="0.5"/>
-            </svg>
+            <span className="text-lg">🔥</span>
             <span className="text-sm font-semibold">5</span>
           </div>
         </header>
@@ -25,27 +22,10 @@ export default function Home() {
         <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4 mb-4">
           <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-3">Ten Tydzień</h2>
 
-          {/* Week Grid */}
-          <div className="grid grid-cols-7 gap-2 mb-3">
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-success flex items-center justify-center relative">
-              <div className="absolute w-1.5 h-1.5 bg-success rounded-full"></div>
-            </div>
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-success flex items-center justify-center relative">
-              <div className="absolute w-1.5 h-1.5 bg-success rounded-full"></div>
-            </div>
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-success flex items-center justify-center relative">
-              <div className="absolute w-1.5 h-1.5 bg-success rounded-full"></div>
-            </div>
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-primary"></div>
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-[#252525]"></div>
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-[#252525]"></div>
-            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-[#252525]"></div>
-          </div>
-
           {/* Progress Bar */}
           <div className="mb-2">
-            <div className="h-1.5 bg-[#1A1A1A] rounded-sm overflow-hidden mb-2">
-              <div className="h-full bg-primary rounded-sm transition-all duration-300" style={{width: '75%'}}></div>
+            <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden mb-2">
+              <div className="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-300" style={{width: '75%'}}></div>
             </div>
             <div className="flex justify-between text-sm text-gray-400">
               <span><strong className="text-white font-medium">3</strong> z 4 treningów</span>
