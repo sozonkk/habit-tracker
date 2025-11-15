@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  streak    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workouts        Workout[]
+  templates       Template[]
+  personalRecords PersonalRecord[]
+}
+
+model Workout {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises Exercise[]
+
+  @@index([userId, date])
+}
+
+model Exercise {
+  id        String   @id @default(cuid())
+  workoutId String
+  name      String
+  notes     String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  sets    Set[]
+
+  @@index([workoutId])
+}
+
+model Set {
+  id         String   @id @default(cuid())
+  exerciseId String
+  reps       Int
+  weight     Float
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId])
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  icon        String   @default("💪")
+  recurrence  String   @default("weekly") // "weekly" or "biweekly"
+  dayOfWeek   Int      // 0-6 (Monday-Sunday)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateExercises TemplateExercise[]
+
+  @@index([userId])
+}
+
+model TemplateExercise {
+  id         String   @id @default(cuid())
+  templateId String
+  name       String
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  template Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId])
+}
+
+model PersonalRecord {
+  id        String   @id @default(cuid())
+  userId    String
+  exercise  String
+  weight    Float
+  reps      Int
+  oneRM     Float?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exercise])
+  @@index([userId])
+}
