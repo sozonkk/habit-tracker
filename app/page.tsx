@@ -136,12 +136,12 @@ export default function Home() {
             <span className="text-xs font-medium">Dodaj</span>
           </Link>
 
-          <button className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
+          <Link href="/stats" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
             <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
               <path d="M3 13H5V17H7V9H9V17H11V5H13V17H15V11H17V17H19V13H21V19C21 19.55 20.55 20 20 20H4C3.45 20 3 19.55 3 19V13Z"/>
             </svg>
             <span className="text-xs font-medium">Statystyki</span>
-          </button>
+          </Link>
 
           <Link href="/history" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
             <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
