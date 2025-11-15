@@ -2,70 +2,172 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen p-4 pb-20 sm:p-8">
-      <main className="max-w-2xl mx-auto">
+    <div className="min-h-screen pb-20">
+      <div className="max-w-2xl mx-auto p-4">
         {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold mb-1">Hi, Bartek! 👋</h1>
-          <p className="text-gray-400 text-sm">Ready to crush it today?</p>
+        <header className="flex justify-between items-start mb-6 py-2">
+          <div>
+            <h1 className="text-2xl font-semibold mb-1 tracking-tight">Cześć, Bartek 👋</h1>
+            <p className="text-sm text-gray-400">Piątek, 15 listopada</p>
+          </div>
+
+          {/* Streak Badge */}
+          <div className="flex items-center gap-2 bg-[#151515] px-3 py-2 rounded-xl border border-[#252525]">
+            <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C12 2 7 6 7 11C7 14.3137 9.68629 17 13 17C16.3137 17 19 14.3137 19 11C19 6 14 2 14 2C14 2 13 3 12 2Z"/>
+              <path d="M12 22C9.23858 22 7 19.7614 7 17V15C7 15 8.5 16 10 16C11.5 16 12 15 12 15C12 15 12.5 16 14 16C15.5 16 17 15 17 15V17C17 19.7614 14.7614 22 12 22Z" opacity="0.5"/>
+            </svg>
+            <span className="text-sm font-semibold">5</span>
+          </div>
         </header>
 
-        {/* Quick Add Button */}
-        <Link
-          href="/add"
-          className="block w-full bg-primary hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-lg mb-8 transition-colors text-center"
-        >
-          + Add Workout
-        </Link>
+        {/* Week Progress Card */}
+        <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4 mb-4">
+          <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-3">Ten Tydzień</h2>
+
+          {/* Week Grid */}
+          <div className="grid grid-cols-7 gap-2 mb-3">
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-success flex items-center justify-center relative">
+              <div className="absolute w-1.5 h-1.5 bg-success rounded-full"></div>
+            </div>
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-success flex items-center justify-center relative">
+              <div className="absolute w-1.5 h-1.5 bg-success rounded-full"></div>
+            </div>
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-success flex items-center justify-center relative">
+              <div className="absolute w-1.5 h-1.5 bg-success rounded-full"></div>
+            </div>
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-primary"></div>
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-[#252525]"></div>
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-[#252525]"></div>
+            <div className="aspect-square rounded-md bg-[#1A1A1A] border border-[#252525]"></div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mb-2">
+            <div className="h-1.5 bg-[#1A1A1A] rounded-sm overflow-hidden mb-2">
+              <div className="h-full bg-primary rounded-sm transition-all duration-300" style={{width: '75%'}}></div>
+            </div>
+            <div className="flex justify-between text-sm text-gray-400">
+              <span><strong className="text-white font-medium">3</strong> z 4 treningów</span>
+              <span><strong className="text-white font-medium">75%</strong> ukończone</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Today's Workout */}
+        <div className="bg-[#151515] border border-[#3A3A3A] rounded-xl p-4 mb-4 relative">
+          <div className="absolute left-0 top-4 bottom-4 w-0.5 bg-primary rounded-r"></div>
+
+          <div className="flex items-center gap-3 mb-3 pl-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.57 14.86L22 13.43L20.57 12L17 15.57L8.43 7L12 3.43L10.57 2L9.14 3.43L7.71 2L5.57 4.14L4.14 2.71L2.71 4.14L4.14 5.57L2 7.71L3.43 9.14L2 10.57L3.43 12L7 8.43L15.57 17L12 20.57L13.43 22L14.86 20.57L16.29 22L18.43 19.86L19.86 21.29L21.29 19.86L19.86 18.43L22 16.29L20.57 14.86Z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold tracking-tight">Dzień Pchający</h3>
+              <p className="text-sm text-gray-400">4 ćwiczenia · 60 min</p>
+            </div>
+          </div>
+
+          <button className="w-full bg-primary hover:bg-[#4F90FF] text-white font-medium py-3 px-4 rounded-lg transition-colors ml-3">
+            Rozpocznij Trening
+          </button>
+        </div>
 
         {/* Recent Workouts */}
         <section>
-          <h2 className="text-lg font-semibold mb-4">Recent Workouts</h2>
-
-          {/* Mock workout card */}
-          <div className="bg-card border border-border rounded-lg p-4 mb-3">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-semibold">Bench Press</h3>
-              <span className="text-xs text-gray-400">Nov 15</span>
-            </div>
-            <p className="text-sm text-gray-400">3 sets • 60 kg</p>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold tracking-tight">Ostatnie Treningi</h2>
+            <Link href="/history" className="text-sm text-primary font-medium flex items-center gap-1">
+              Zobacz wszystkie
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </Link>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-4 mb-3">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-semibold">Squat</h3>
-              <span className="text-xs text-gray-400">Nov 13</span>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center p-4 bg-[#151515] border border-[#2A2A2A] rounded-lg hover:border-[#3A3A3A] transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#1A1A1A] rounded-md flex items-center justify-center">
+                  <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="4" y="10" width="16" height="4" rx="1"/>
+                    <circle cx="6" cy="12" r="2"/>
+                    <circle cx="18" cy="12" r="2"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-medium">Wyciskanie Sztangi</div>
+                  <div className="text-sm text-gray-400 font-mono">3×10 · 60kg</div>
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 font-medium">15 lis</div>
             </div>
-            <p className="text-sm text-gray-400">4 sets • 100 kg</p>
-          </div>
 
-          <Link
-            href="/history"
-            className="block w-full text-center text-sm text-gray-400 hover:text-white py-2 transition-colors"
-          >
-            View All →
-          </Link>
+            <div className="flex justify-between items-center p-4 bg-[#151515] border border-[#2A2A2A] rounded-lg hover:border-[#3A3A3A] transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#1A1A1A] rounded-md flex items-center justify-center">
+                  <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3L4 9V21H9V14H15V21H20V9L12 3Z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-medium">Przysiady</div>
+                  <div className="text-sm text-gray-400 font-mono">4×8 · 100kg</div>
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 font-medium">13 lis</div>
+            </div>
+
+            <div className="flex justify-between items-center p-4 bg-[#151515] border border-[#2A2A2A] rounded-lg hover:border-[#3A3A3A] transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#1A1A1A] rounded-md flex items-center justify-center">
+                  <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="8" y="4" width="8" height="3" rx="1"/>
+                    <path d="M10 7L8 21H16L14 7H10Z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-medium">Martwy Ciąg</div>
+                  <div className="text-sm text-gray-400 font-mono">4×6 · 120kg</div>
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 font-medium">11 lis</div>
+            </div>
+          </div>
         </section>
-      </main>
+      </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border">
-        <div className="max-w-2xl mx-auto flex justify-around py-3">
-          <div className="flex flex-col items-center text-primary">
-            <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#151515] border-t border-[#2A2A2A]">
+        <div className="max-w-2xl mx-auto grid grid-cols-4 py-2">
+          <div className="flex flex-col items-center text-primary p-2">
+            <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z"/>
             </svg>
-            <span className="text-xs font-medium">Home</span>
+            <span className="text-xs font-medium">Główna</span>
           </div>
-          <Link
-            href="/history"
-            className="flex flex-col items-center text-gray-400 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-              <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+
+          <Link href="/add" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
+            <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
             </svg>
-            <span className="text-xs font-medium">History</span>
+            <span className="text-xs font-medium">Dodaj</span>
+          </Link>
+
+          <button className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
+            <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 13H5V17H7V9H9V17H11V5H13V17H15V11H17V17H19V13H21V19C21 19.55 20.55 20 20 20H4C3.45 20 3 19.55 3 19V13Z"/>
+            </svg>
+            <span className="text-xs font-medium">Statystyki</span>
+          </button>
+
+          <Link href="/history" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
+            <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 11H7V13H9V11ZM13 11H11V13H13V11ZM17 11H15V13H17V11ZM19 4H18V2H16V4H8V2H6V4H5C3.9 4 3 4.9 3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V9H19V20Z"/>
+            </svg>
+            <span className="text-xs font-medium">Historia</span>
           </Link>
         </div>
       </nav>
