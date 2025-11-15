@@ -65,59 +65,62 @@ export default function History() {
               <div className="space-y-3">
                 {workouts
                   .filter((w) => w.date === date)
-                  .map((workout) => (
-                    <div
-                      key={workout.id}
-                      className="bg-card border border-border rounded-lg p-4"
-                    >
-                      {/* Exercise Header */}
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-semibold text-lg">
-                          {workout.exercise}
-                        </h3>
-                        <button className="text-gray-400 hover:text-danger transition-colors">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
+                  .map((workout) => {
+                    const totalReps = workout.sets.reduce(
+                      (sum, s) => sum + s.reps,
+                      0
+                    );
+                    const totalVolume = workout.sets.reduce(
+                      (sum, s) => sum + s.reps * s.weight,
+                      0
+                    );
+                    const weights = workout.sets.map((s) => s.weight);
+                    const minWeight = Math.min(...weights);
+                    const maxWeight = Math.max(...weights);
+                    const weightRange =
+                      minWeight === maxWeight
+                        ? `${minWeight}kg`
+                        : `${minWeight}-${maxWeight}kg`;
 
-                      {/* Sets */}
-                      <div className="space-y-1">
-                        {workout.sets.map((set) => (
-                          <div
-                            key={set.set}
-                            className="flex items-center text-sm text-gray-300"
-                          >
-                            <span className="w-16">Set {set.set}:</span>
-                            <span className="flex-1">
-                              {set.reps} reps @ {set.weight}kg
-                            </span>
+                    return (
+                      <div
+                        key={workout.id}
+                        className="bg-card border border-border rounded-lg p-3"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="flex-1">
+                            <h3 className="font-semibold mb-1">
+                              {workout.exercise}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs text-gray-400">
+                              <span>{workout.sets.length} serie</span>
+                              <span>•</span>
+                              <span>{weightRange}</span>
+                              <span>•</span>
+                              <span>{totalReps} powt.</span>
+                              <span>•</span>
+                              <span>{totalVolume}kg vol.</span>
+                            </div>
                           </div>
-                        ))}
+                          <button className="text-gray-400 hover:text-red-500 transition-colors ml-2">
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-
-                      {/* Summary */}
-                      <div className="mt-3 pt-3 border-t border-border text-xs text-gray-400">
-                        {workout.sets.length} sets •{" "}
-                        {workout.sets.reduce(
-                          (sum, s) => sum + s.reps * s.weight,
-                          0
-                        )}
-                        kg total volume
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
           ))}
@@ -156,6 +159,19 @@ export default function History() {
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
             <span className="text-xs font-medium">Home</span>
+          </Link>
+          <Link
+            href="/stats"
+            className="flex flex-col items-center text-gray-400 hover:text-white transition-colors"
+          >
+            <svg
+              className="w-6 h-6 mb-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+            </svg>
+            <span className="text-xs font-medium">Stats</span>
           </Link>
           <div className="flex flex-col items-center text-primary">
             <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
