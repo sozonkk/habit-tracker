@@ -121,13 +121,20 @@ export default function Home() {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-[#151515] border-t border-[#2A2A2A]">
-        <div className="max-w-2xl mx-auto grid grid-cols-4 py-2">
+        <div className="max-w-2xl mx-auto grid grid-cols-5 py-2">
           <div className="flex flex-col items-center text-primary p-2">
             <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
               <path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z"/>
             </svg>
             <span className="text-xs font-medium">Główna</span>
           </div>
+
+          <Link href="/treningi" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
+            <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 11H7V13H9V11ZM13 11H11V13H13V11ZM17 11H15V13H17V11ZM19 4H18V2H16V4H8V2H6V4H5C3.9 4 3 4.9 3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V9H19V20Z"/>
+            </svg>
+            <span className="text-xs font-medium">Treningi</span>
+          </Link>
 
           <Link href="/add" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
             <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
@@ -145,7 +152,7 @@ export default function Home() {
 
           <Link href="/history" className="flex flex-col items-center text-gray-500 hover:text-gray-400 transition-colors p-2">
             <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M9 11H7V13H9V11ZM13 11H11V13H13V11ZM17 11H15V13H17V11ZM19 4H18V2H16V4H8V2H6V4H5C3.9 4 3 4.9 3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V9H19V20Z"/>
+              <path d="M13 3C8.03 3 4 7.03 4 12H1L4.89 15.89L4.96 16.03L9 12H6C6 8.13 9.13 5 13 5C16.87 5 20 8.13 20 12C20 15.87 16.87 19 13 19C11.07 19 9.32 18.21 8.06 16.94L6.64 18.36C8.27 19.99 10.51 21 13 21C17.97 21 22 16.97 22 12C22 7.03 17.97 3 13 3ZM12 8V13L16.28 15.54L17 14.33L13.5 12.25V8H12Z"/>
             </svg>
             <span className="text-xs font-medium">Historia</span>
           </Link>
