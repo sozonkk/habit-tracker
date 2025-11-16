@@ -1,68 +1,93 @@
-import Link from "next/link";
+"use client";
 
-// Mock data
-const workouts = [
-  {
-    id: 1,
-    date: "15 listopada 2024",
-    dateShort: "15 lis",
-    exercise: "Wyciskanie Sztangi",
-    sets: [
-      { set: 1, reps: 10, weight: 60 },
-      { set: 2, reps: 10, weight: 60 },
-      { set: 3, reps: 8, weight: 60 },
-    ],
-  },
-  {
-    id: 2,
-    date: "15 listopada 2024",
-    dateShort: "15 lis",
-    exercise: "Przysiady",
-    sets: [
-      { set: 1, reps: 8, weight: 100 },
-      { set: 2, reps: 8, weight: 100 },
-      { set: 3, reps: 8, weight: 100 },
-      { set: 4, reps: 6, weight: 100 },
-    ],
-  },
-  {
-    id: 3,
-    date: "13 listopada 2024",
-    dateShort: "13 lis",
-    exercise: "Martwy Ciąg",
-    sets: [
-      { set: 1, reps: 6, weight: 120 },
-      { set: 2, reps: 6, weight: 120 },
-      { set: 3, reps: 5, weight: 120 },
-      { set: 4, reps: 5, weight: 120 },
-    ],
-  },
-  {
-    id: 4,
-    date: "13 listopada 2024",
-    dateShort: "13 lis",
-    exercise: "Wyciskanie Nad Głowę",
-    sets: [
-      { set: 1, reps: 10, weight: 40 },
-      { set: 2, reps: 10, weight: 40 },
-      { set: 3, reps: 8, weight: 40 },
-    ],
-  },
-  {
-    id: 5,
-    date: "11 listopada 2024",
-    dateShort: "11 lis",
-    exercise: "Wiosłowanie Sztangą",
-    sets: [
-      { set: 1, reps: 10, weight: 70 },
-      { set: 2, reps: 10, weight: 70 },
-      { set: 3, reps: 8, weight: 70 },
-      { set: 4, reps: 8, weight: 70 },
-    ],
-  },
-];
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+type WorkoutSet = {
+  reps: number;
+  weight: number;
+};
+
+type WorkoutExercise = {
+  name: string;
+  sets: WorkoutSet[];
+};
+
+type Workout = {
+  id: string;
+  date: string;
+  exercises: WorkoutExercise[];
+  notes?: string;
+};
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const months = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
+function formatDateShort(dateString: string) {
+  const date = new Date(dateString);
+  const months = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  return `${day} ${month}`;
+}
 
 export default function History() {
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchWorkouts();
+  }, []);
+
+  const fetchWorkouts = async () => {
+    try {
+      const response = await fetch('/api/workouts');
+      if (!response.ok) {
+        throw new Error('Failed to fetch workouts');
+      }
+      const data = await response.json();
+      setWorkouts(data);
+    } catch (err) {
+      console.error('Error fetching workouts:', err);
+      setError('Nie udało się pobrać historii treningów');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Group workouts by date
+  const workoutsByDate = workouts.reduce((acc, workout) => {
+    const dateKey = formatDate(workout.date);
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(workout);
+    return acc;
+  }, {} as Record<string, Workout[]>);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pb-20 flex items-center justify-center">
+        <div className="text-gray-400">Ładowanie historii...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen pb-20 flex items-center justify-center">
+        <div className="text-red-400">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-2xl mx-auto p-4">
@@ -73,47 +98,47 @@ export default function History() {
         </header>
 
         {/* Workouts List */}
-        <div className="space-y-6">
-          {/* Group by date */}
-          {Array.from(new Set(workouts.map((w) => w.date))).map((date) => (
-            <div key={date}>
-              <h2 className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wide">{date}</h2>
-              <div className="space-y-3">
-                {workouts
-                  .filter((w) => w.date === date)
-                  .map((workout) => (
-                    <div
-                      key={workout.id}
-                      className="bg-[#151515] border border-[#2A2A2A] rounded-lg p-3 hover:border-[#3A3A3A] transition-colors"
-                    >
-                      {/* Exercise Header */}
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-medium tracking-tight">{workout.exercise}</h3>
-                        <button className="text-gray-500 hover:text-red-400 transition-colors p-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                          </svg>
-                        </button>
+        {workouts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400 mb-4">Nie masz jeszcze żadnych treningów</p>
+            <Link href="/add" className="text-primary font-medium">
+              Dodaj pierwszy trening →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Group by date */}
+            {Object.entries(workoutsByDate).map(([date, dayWorkouts]) => (
+              <div key={date}>
+                <h2 className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wide">{date}</h2>
+                <div className="space-y-2">
+                  {dayWorkouts.map((workout) =>
+                    workout.exercises.map((exercise, exIdx) => (
+                      <div
+                        key={`${workout.id}-${exIdx}`}
+                        className="bg-[#151515] border border-[#2A2A2A] rounded-lg p-3 hover:border-[#3A3A3A] transition-colors"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-medium">{exercise.name}</div>
+                          <div className="text-xs text-gray-500 font-medium">{formatDateShort(workout.date)}</div>
+                        </div>
+                        <p className="text-sm text-gray-400 font-mono mb-2">
+                          {exercise.sets.map((s) => `${s.reps}×${s.weight}kg`).join(' · ')}
+                        </p>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>{exercise.sets.length} {exercise.sets.length === 1 ? 'seria' : 'serie'}</span>
+                          <span className="font-mono">
+                            Volume: {exercise.sets.reduce((sum, s) => sum + s.reps * s.weight, 0)}kg
+                          </span>
+                        </div>
                       </div>
-
-                      {/* Sets in one line */}
-                      <p className="text-sm text-gray-400 font-mono mb-2">
-                        {workout.sets.map((s) => `${s.reps}×${s.weight}kg`).join(' · ')}
-                      </p>
-
-                      {/* Summary */}
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>{workout.sets.length} {workout.sets.length === 1 ? 'seria' : 'serie'}</span>
-                        <span className="font-mono">
-                          Volume: {workout.sets.reduce((sum, s) => sum + s.reps * s.weight, 0)}kg
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom Navigation */}

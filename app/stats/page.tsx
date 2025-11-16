@@ -1,34 +1,74 @@
-import Link from "next/link";
+"use client";
 
-// Mock stats data
-const stats = {
-  totalWorkouts: 12,
-  thisWeek: 3,
-  thisMonth: 12,
-  streak: 5,
-  topExercises: [
-    { name: "Przysiady", count: 8, totalWeight: 6400 },
-    { name: "Wyciskanie Sztangi", count: 7, totalWeight: 4200 },
-    { name: "Martwy Ciąg", count: 6, totalWeight: 7200 },
-  ],
-  personalRecords: [
-    { exercise: "Przysiady", weight: 100, reps: 8, oneRM: 125, date: "15 lis" },
-    { exercise: "Martwy Ciąg", weight: 120, reps: 6, oneRM: 140, date: "13 lis" },
-    { exercise: "Wyciskanie Sztangi", weight: 60, reps: 10, oneRM: 80, date: "15 lis" },
-  ],
-  weeklyProgress: [
-    { day: "Pn", workouts: 1 },
-    { day: "Wt", workouts: 0 },
-    { day: "Śr", workouts: 1 },
-    { day: "Cz", workouts: 0 },
-    { day: "Pt", workouts: 1 },
-    { day: "So", workouts: 0 },
-    { day: "Nd", workouts: 0 },
-  ],
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+type PersonalRecord = {
+  exercise: string;
+  weight: number;
+  reps: number;
+  oneRM: number | null;
+  date: string;
 };
 
+type StatsData = {
+  user: {
+    streak: number;
+  };
+  workoutsThisWeek: number;
+  totalWorkouts: number;
+  totalVolume: number;
+  personalRecords: PersonalRecord[];
+};
+
+function formatDateShort(dateString: string) {
+  const date = new Date(dateString);
+  const months = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  return `${day} ${month}`;
+}
+
 export default function Stats() {
-  const maxWorkouts = Math.max(...stats.weeklyProgress.map(d => d.workouts));
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/stats');
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+      setError('Nie udało się pobrać statystyk');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pb-20 flex items-center justify-center">
+        <div className="text-gray-400">Ładowanie statystyk...</div>
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="min-h-screen pb-20 flex items-center justify-center">
+        <div className="text-red-400">{error || 'Błąd ładowania'}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-20">
@@ -41,99 +81,82 @@ export default function Stats() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Streak */}
           <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Ten Tydzień</p>
-            <p className="text-3xl font-semibold">{stats.thisWeek}</p>
-            <p className="text-xs text-gray-500 mt-1">treningi</p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">🔥</span>
+              <span className="text-sm text-gray-400 uppercase tracking-wide">Streak</span>
+            </div>
+            <div className="text-3xl font-bold font-mono">{stats.user.streak}</div>
+            <div className="text-xs text-gray-500 mt-1">{stats.user.streak === 1 ? 'dzień' : 'dni'} z rzędu</div>
           </div>
 
+          {/* This Week */}
           <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Seria 🔥</p>
-            <p className="text-3xl font-semibold">{stats.streak}</p>
-            <p className="text-xs text-gray-500 mt-1">dni</p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">💪</span>
+              <span className="text-sm text-gray-400 uppercase tracking-wide">Ten tydzień</span>
+            </div>
+            <div className="text-3xl font-bold font-mono">{stats.workoutsThisWeek}</div>
+            <div className="text-xs text-gray-500 mt-1">{stats.workoutsThisWeek === 1 ? 'trening' : 'treningi'}</div>
           </div>
 
+          {/* Total Workouts */}
           <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Ten Miesiąc</p>
-            <p className="text-3xl font-semibold">{stats.thisMonth}</p>
-            <p className="text-xs text-gray-500 mt-1">treningi</p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">📊</span>
+              <span className="text-sm text-gray-400 uppercase tracking-wide">Łącznie</span>
+            </div>
+            <div className="text-3xl font-bold font-mono">{stats.totalWorkouts}</div>
+            <div className="text-xs text-gray-500 mt-1">{stats.totalWorkouts === 1 ? 'trening' : 'treningów'}</div>
           </div>
 
+          {/* Volume This Week */}
           <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Łącznie</p>
-            <p className="text-3xl font-semibold">{stats.totalWorkouts}</p>
-            <p className="text-xs text-gray-500 mt-1">treningi</p>
-          </div>
-        </div>
-
-        {/* Weekly Chart */}
-        <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4 mb-4">
-          <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-4">Aktywność w tym tygodniu</h2>
-          <div className="flex items-end justify-between gap-2 h-32">
-            {stats.weeklyProgress.map((day) => (
-              <div key={day.day} className="flex-1 flex flex-col items-center gap-2">
-                <div className="w-full bg-[#1A1A1A] rounded-t-lg relative"
-                     style={{
-                       height: `${maxWorkouts > 0 ? (day.workouts / maxWorkouts) * 100 : 0}%`,
-                       minHeight: day.workouts > 0 ? '20%' : '0%'
-                     }}>
-                  {day.workouts > 0 && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-500 to-green-400 rounded-t-lg"></div>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 font-medium">{day.day}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Top Exercises */}
-        <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4 mb-4">
-          <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-3">Najczęstsze Ćwiczenia</h2>
-          <div className="space-y-3">
-            {stats.topExercises.map((ex, idx) => (
-              <div key={ex.name}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium">{ex.name}</span>
-                  <span className="text-sm text-gray-400">{ex.count} razy</span>
-                </div>
-                <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full"
-                    style={{ width: `${(ex.count / stats.topExercises[0].count) * 100}%` }}
-                  ></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Łączny ciężar: {ex.totalWeight.toLocaleString()}kg</p>
-              </div>
-            ))}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">⚡</span>
+              <span className="text-sm text-gray-400 uppercase tracking-wide">Volume</span>
+            </div>
+            <div className="text-3xl font-bold font-mono">{(stats.totalVolume / 1000).toFixed(1)}</div>
+            <div className="text-xs text-gray-500 mt-1">ton ten tydzień</div>
           </div>
         </div>
 
         {/* Personal Records */}
-        <div className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4 mb-4">
-          <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-3">Rekordy Osobiste</h2>
-          <div className="space-y-2">
-            {stats.personalRecords.map((record) => (
-              <div
-                key={record.exercise}
-                className="p-3 bg-[#1A1A1A] rounded-lg"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-medium">{record.exercise}</p>
-                    <p className="text-xs text-gray-500">{record.date}</p>
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-4 tracking-tight">Rekordy Osobiste</h2>
+          {stats.personalRecords.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              Brak rekordów osobistych
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {stats.personalRecords.map((record, idx) => (
+                <div key={idx} className="bg-[#151515] border border-[#2A2A2A] rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-lg">{record.exercise}</h3>
+                    <span className="text-xs text-gray-500">{formatDateShort(record.date)}</span>
                   </div>
-                  <div className="text-right">
-                    <p className="font-mono font-semibold text-primary">{record.weight}kg × {record.reps}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold font-mono text-primary">{record.weight}</span>
+                      <span className="text-sm text-gray-500">kg</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-semibold font-mono">{record.reps}</span>
+                      <span className="text-sm text-gray-500">{record.reps === 1 ? 'powtórzenie' : 'powtórzeń'}</span>
+                    </div>
                   </div>
+                  {record.oneRM && (
+                    <div className="flex items-center gap-2 pt-2 border-t border-[#252525] mt-3">
+                      <span className="text-xs text-gray-500">1RM (szacowane):</span>
+                      <span className="text-sm font-mono font-semibold text-emerald-400">{record.oneRM}kg</span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-[#252525]">
-                  <span className="text-xs text-gray-500">1RM (szacowane):</span>
-                  <span className="text-sm font-mono font-semibold text-emerald-400">{record.oneRM}kg</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
