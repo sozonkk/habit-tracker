@@ -19,6 +19,7 @@ export default function AddWorkout() {
   const [currentSets, setCurrentSets] = useState<SetData[]>([{ reps: "10", weight: "60" }]);
   const [notes, setNotes] = useState("");
   const [workout, setWorkout] = useState<ExerciseData[]>([]);
+  const [saving, setSaving] = useState(false);
 
   // Mock exercises list
   const exercises = [
@@ -67,11 +68,46 @@ export default function AddWorkout() {
     setWorkout(workout.filter((_, i) => i !== index));
   };
 
-  const saveWorkout = () => {
-    const summary = workout.map(ex =>
-      `${ex.name}: ${ex.sets.length} serie`
-    ).join('\n');
-    alert(`Zapisano trening!\n\n${summary}`);
+  const saveWorkout = async () => {
+    if (workout.length === 0) {
+      alert('Dodaj przynajmniej jedno ćwiczenie do treningu!');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch('/api/workouts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date: new Date().toISOString(),
+          exercises: workout,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save workout');
+      }
+
+      const savedWorkout = await response.json();
+      const summary = workout.map(ex =>
+        `${ex.name}: ${ex.sets.length} serie`
+      ).join('\n');
+
+      alert(`✅ Trening zapisany!\n\n${summary}`);
+
+      // Reset workout
+      setWorkout([]);
+      setCurrentSets([{ reps: "10", weight: "60" }]);
+      setNotes("");
+    } catch (error) {
+      console.error('Error saving workout:', error);
+      alert('❌ Błąd podczas zapisywania treningu. Spróbuj ponownie.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -207,9 +243,10 @@ export default function AddWorkout() {
 
             <button
               onClick={saveWorkout}
-              className="w-full bg-primary hover:bg-[#4F90FF] text-white font-medium py-4 rounded-lg transition-colors mt-4"
+              disabled={saving}
+              className="w-full bg-primary hover:bg-[#4F90FF] text-white font-medium py-4 rounded-lg transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Zapisz trening ({workout.length} {workout.length === 1 ? 'ćwiczenie' : 'ćwiczenia'})
+              {saving ? 'Zapisywanie...' : `Zapisz trening (${workout.length} ${workout.length === 1 ? 'ćwiczenie' : 'ćwiczenia'})`}
             </button>
           </div>
         )}
